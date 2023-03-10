@@ -13,26 +13,26 @@ export default function SuccessPage({ order, setOrder }) {
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
 
-            <TextContainer>
+            <TextContainer data-test="movie-info">
                 <strong><p>Filme e sessão</p></strong>
                 <p>{order.seats.movie.title}</p>
                 <p>{order.seats.day.date} - {order.seats.name}</p>
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
                 {order.seatSelected.map((s)=>
                     <p key={s}>Assento {s}</p>
                 )}
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
                 <p>Nome: {order.name}</p>
                 <p>CPF: {order.cpf}</p>
             </TextContainer>
 
-            <button onClick={goHome}>Voltar para Home</button>
+            <button data-test="go-home-btn" onClick={goHome}>Voltar para Home</button>
         </PageContainer>
     )
 }
@@ -52,6 +52,7 @@ const PageContainer = styled.div`
     }
     button {
         margin-top: 50px;
+        cursor: pointer;
     }
     h1 {
         font-family: 'Roboto';

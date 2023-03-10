@@ -70,7 +70,7 @@ export default function SeatsPage({ order, setOrder }) {
             Selecione o(s) assento(s)
             <SeatsContainer>
                 {seats.seats.map((s) =>
-                    <SeatItem key={s.id}
+                    <SeatItem key={s.id} data-test="seat"
                         seatColor={s.isAvailable === false ? "unavailable" : seatSelected.includes(s.name) ? "selected" : "available"}
                         onClick={() => changeStatus(s.isAvailable, s.id, s.name)}
                     >
@@ -99,6 +99,7 @@ export default function SeatsPage({ order, setOrder }) {
                     Nome do Comprador:
                 </lable>
                 <input
+                    data-test="client-name"
                     id="name"
                     placeholder="Digite seu nome..."
                     value={name}
@@ -109,16 +110,17 @@ export default function SeatsPage({ order, setOrder }) {
                     CPF do Comprador:
                 </lable>
                 <input
+                    data-test="client-cpf"
                     id="cpf"
                     placeholder="Digite seu CPF..."
                     value={cpf}
                     onChange={e => setCpf(e.target.value)}
                     required />
 
-                <button type="submit">Reservar Assento(s)</button>
+                <button data-test="book-seat-btn" type="submit">Reservar Assento(s)</button>
             </FormContainer>
 
-            <FooterContainer>
+            <FooterContainer data-test="footer">
                 <div>
                     <MovieBanner url={seats.movie.posterURL} title={seats.movie.title} />
                 </div>
