@@ -1,6 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
 
-export default function SuccessPage() {
+export default function SuccessPage({ order, setOrder }) {
+    const navigate = useNavigate();
+
+    function goHome(){
+        setOrder(undefined);
+        navigate("/");
+    }
 
     return (
         <PageContainer>
@@ -8,24 +15,24 @@ export default function SuccessPage() {
 
             <TextContainer>
                 <strong><p>Filme e sessão</p></strong>
-                <p>Tudo em todo lugar ao mesmo tempo</p>
-                <p>03/03/2023 - 14:00</p>
+                <p>{order.seats.movie.title}</p>
+                <p>{order.seats.day.date} - {order.seats.name}</p>
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Ingressos</p></strong>
-                <p>Assento 01</p>
-                <p>Assento 02</p>
-                <p>Assento 03</p>
+                {order.seatSelected.map((s)=>
+                    <p key={s}>Assento {s}</p>
+                )}
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Comprador</p></strong>
-                <p>Nome: Letícia Chijo</p>
-                <p>CPF: 123.456.789-10</p>
+                <p>Nome: {order.name}</p>
+                <p>CPF: {order.cpf}</p>
             </TextContainer>
 
-            <button>Voltar para Home</button>
+            <button onClick={goHome}>Voltar para Home</button>
         </PageContainer>
     )
 }

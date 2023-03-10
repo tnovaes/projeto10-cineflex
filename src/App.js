@@ -4,8 +4,11 @@ import HomePage from "./pages/HomePage/HomePage"
 import SeatsPage from "./pages/SeatsPage/SeatsPage"
 import SessionsPage from "./pages/SessionsPage/SessionsPage"
 import SuccessPage from "./pages/SuccessPage/SuccessPage"
+import { useState } from "react"
 
 export default function App() {
+    const [order, setOrder] = useState(undefined);
+
     return (
         <>
             <BrowserRouter>
@@ -13,8 +16,8 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/sessoes/:idMovie" element={<SessionsPage />} />
-                    <Route path="/assentos/:idSession" element={<SeatsPage />} />
-                    <Route path="/sucesso" element={<SuccessPage />} />
+                    <Route path="/assentos/:idSession" element={<SeatsPage order={order} setOrder={setOrder} />} />
+                    <Route path="/sucesso" element={<SuccessPage order={order} setOrder={setOrder}/>} />
                 </Routes>
             </BrowserRouter>
         </>
