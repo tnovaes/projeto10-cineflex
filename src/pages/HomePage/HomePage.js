@@ -2,22 +2,23 @@ import { useEffect, useState } from "react"
 import styled from "styled-components"
 import MovieBanner from "../../components/MovieBanner";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
     const [movies, setMovies] = useState(null);
     const url = "https://mock-api.driven.com.br/api/v8/cineflex/movies";
 
     useEffect(() => {
-		const promise = axios.get(url);
+        const promise = axios.get(url);
 
-		promise.then(res => {
-			setMovies(res.data);
-		});
-	}, []);
+        promise.then(res => {
+            setMovies(res.data);
+        });
+    }, []);
 
-    if(movies === null) {
-		return <PageContainer>Carregando..</PageContainer>;
-	}
+    if (movies === null) {
+        return <PageContainer>Carregando..</PageContainer>;
+    }
 
 
     return (
@@ -25,11 +26,14 @@ export default function HomePage() {
             Selecione o filme
 
             <ListContainer>
-                    {movies.map((m)=> 
-                        <MovieContainer key={m.id}>
-                        <MovieBanner url={m.posterURL} title={m.title} />
-                        </MovieContainer>
-                        )}
+                {movies.map((m) =>
+                    <MovieContainer key={m.id}>
+                        <Link to={`/sessoes/${m.id}`}>
+                            <MovieBanner url={m.posterURL} title={m.title} />
+                        </Link>
+                    </MovieContainer>
+
+                )}
             </ListContainer>
 
         </PageContainer>

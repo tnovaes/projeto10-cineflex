@@ -1,42 +1,50 @@
 import styled from "styled-components"
+import { useEffect, useState } from "react"
+import axios from "axios";
+import { useParams, Link } from "react-router-dom";
+import MovieBanner from "../../components/MovieBanner";
 
 export default function SessionsPage() {
+    const [sessions, setSessions] = useState(null);
+    const { idMovie } = useParams();
+    const url = `https://mock-api.driven.com.br/api/v8/cineflex/movies/${idMovie}/showtimes`;
+
+    useEffect(() => {
+        const promise = axios.get(url);
+
+        promise.then(res => {
+            setSessions(res.data);
+        });
+    }, []);
+
+    if (sessions === null) {
+        return <PageContainer>Carregando..</PageContainer>;
+    }
 
     return (
         <PageContainer>
             Selecione o horário
             <div>
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
+                {sessions.days.map((s) =>
+                    <SessionContainer key={s.id}>
+                        {s.weekday} - {s.date}
+                        {s.showtimes.map((st) =>
+                            <ButtonsContainer key={st.id}>
+                                <Link to={`/assentos/${st.id}`}>
+                                    <button>{st.name}</button>
+                                </Link>
+                            </ButtonsContainer>
+                        )}
+                    </SessionContainer>
+                )}
             </div>
 
             <FooterContainer>
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <MovieBanner url={sessions.posterURL} alt={sessions.title} />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
+                    <p>{sessions.title}</p>
                 </div>
             </FooterContainer>
 
@@ -73,6 +81,7 @@ const ButtonsContainer = styled.div`
     margin: 20px 0;
     button {
         margin-right: 20px;
+        cursor: pointer;
     }
     a {
         text-decoration: none;

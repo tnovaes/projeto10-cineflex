@@ -1,51 +1,98 @@
 import styled from "styled-components"
+import MovieBanner from "../../components/MovieBanner";
+import { useEffect, useState } from "react"
+import axios from "axios";
+import { useParams, Link } from "react-router-dom";
 
 export default function SeatsPage() {
+    const [seats, setSeats] = useState(null);
+    const [seatSelected, setSeatSelected] = useState([]);
+    const [seatReserved, setSeatReserved] = useState([]);
+
+    const { idSession } = useParams();
+
+    const url = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSession}/seats`;
+
+    useEffect(() => {
+        const promise = axios.get(url);
+
+        promise.then(res => {
+            setSeats(res.data);
+        });
+    }, []);
+
+    if (seats === null) {
+        return <PageContainer>Carregando..</PageContainer>;
+    }
+
+    function changeStatus(isAvailable, id, name) {
+        if (isAvailable === false) {
+            alert("Esse assento não está disponível.")
+            return;
+        }
+        if (!seatReserved.includes(id) && !seatSelected.includes(name)) {
+            const newReserved = [...seatReserved, id];
+            const newSelected = [...seatSelected, name];
+            setSeatReserved(newReserved);
+            setSeatSelected(newSelected);
+        }
+        else {
+            const removeReserved = seatReserved.filter(s => s !== id);
+            const removeSelected = seatSelected.filter(s => s !== name);
+            setSeatReserved(removeReserved);
+            setSeatSelected(removeSelected);
+            return;
+        }
+    }
 
     return (
         <PageContainer>
             Selecione o(s) assento(s)
-
             <SeatsContainer>
-                <SeatItem>01</SeatItem>
-                <SeatItem>02</SeatItem>
-                <SeatItem>03</SeatItem>
-                <SeatItem>04</SeatItem>
-                <SeatItem>05</SeatItem>
+                {seats.seats.map((s) =>
+                    <SeatItem key={s.id}
+                        seatColor={s.isAvailable === false ? "unavailable" : seatSelected.includes(s.name) ? "selected" : "available"}
+                        onClick={() => changeStatus(s.isAvailable, s.id, s.name)}
+                        >
+                        {s.name}
+                    </SeatItem>
+                )}
             </SeatsContainer>
 
             <CaptionContainer>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle seatColor="selected" />
                     Selecionado
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle seatColor="available" />
                     Disponível
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle seatColor="unavailable" />
                     Indisponível
                 </CaptionItem>
             </CaptionContainer>
 
             <FormContainer>
                 Nome do Comprador:
-                <input placeholder="Digite seu nome..." />
+                <input
+                    placeholder="Digite seu nome..."
+                    required />
 
                 CPF do Comprador:
-                <input placeholder="Digite seu CPF..." />
+                <input placeholder="Digite seu CPF..." required />
 
-                <button>Reservar Assento(s)</button>
+                <button type="submit">Reservar Assento(s)</button>
             </FormContainer>
 
             <FooterContainer>
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <MovieBanner url={seats.movie.posterURL} title={seats.movie.title} />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
-                    <p>Sexta - 14h00</p>
+                    <p>{seats.movie.title}</p>
+                    <p>{seats.day.weekday} - {seats.day.date}</p>
                 </div>
             </FooterContainer>
 
@@ -74,7 +121,7 @@ const SeatsContainer = styled.div`
     justify-content: center;
     margin-top: 20px;
 `
-const FormContainer = styled.div`
+const FormContainer = styled.form`
     width: calc(100vw - 40px); 
     display: flex;
     flex-direction: column;
@@ -96,8 +143,8 @@ const CaptionContainer = styled.div`
     margin: 20px;
 `
 const CaptionCircle = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${props => (props.seatColor === "selected" ? "#0E7D71" : props.seatColor === "unavailable" ? "#F7C52B" : "#808F9D")};         // Essa cor deve mudar
+    background-color: ${props => (props.seatColor === "selected" ? "#1AAE9E" : props.seatColor === "unavailable" ? "#FBE192" : "#C3CFD9")};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -113,8 +160,8 @@ const CaptionItem = styled.div`
     font-size: 12px;
 `
 const SeatItem = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${props => (props.seatColor === "selected" ? "#0E7D71" : props.seatColor === "unavailable" ? "#F7C52B" : "#808F9D")};         // Essa cor deve mudar
+    background-color: ${props => (props.seatColor === "selected" ? "#1AAE9E" : props.seatColor === "unavailable" ? "#FBE192" : "#C3CFD9")};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -124,6 +171,7 @@ const SeatItem = styled.div`
     align-items: center;
     justify-content: center;
     margin: 5px 3px;
+    cursor: pointer;
 `
 const FooterContainer = styled.div`
     width: 100%;
